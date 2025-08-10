@@ -18,13 +18,13 @@ if ($action === 'signup') {
     $name = $conn->real_escape_string($data['TutorName']);
     $pass = $conn->real_escape_string($data['Password']);
 
-    $check = $conn->query("SELECT TutorID FROM tblTutors WHERE TutorName='$name'");
+    $check = $conn->query("SELECT Tutor_Number FROM tutor_tbl WHERE Tutor_Name_Surname='$name'");
     if ($check->num_rows > 0) {
         echo json_encode(["success" => false, "message" => "Tutor Name already exists"]);
         exit;
     }
 
-    $conn->query("INSERT INTO tblTutors (TutorName, Password) VALUES ('$name', '$pass')");
+    $conn->query("INSERT INTO tutor_tbl (Tutor_Name_Surname, Password) VALUES ('$name', '$pass')");
     echo json_encode(["success" => true]);
 }
 elseif ($action === 'login') {
