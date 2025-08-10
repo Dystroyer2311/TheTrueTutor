@@ -54,7 +54,7 @@
       padding: 10px;
       margin-top: 10px;
       border: 1px solid #d1d5db;
-      border-radius: 6px;
+      border-radius: 30px;
       font-size: 1rem;
     }
 
@@ -67,6 +67,24 @@
     button:hover {
       background-color: #2563eb;
     }
+
+
+.signup-button {
+  background-color: #287aff;
+  color: white;
+  cursor: pointer;
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 30px;
+  font-size: 1rem;
+
+}
+
+.signup-button:hover {
+ background-color: #2563eb;
+}
 
     #logo {
       text-align: center;
@@ -99,14 +117,18 @@
       <button type="submit">Log In</button>
     </form>
 
+  </div>
+<div class="auth-container">
+  <a href="Signup.html" class="signup-button">Sign Up</a>
+</div>   
+
     <!-- Signup Box -->
     <!-- <form id="signup-form">
       <h2>Sign Up</h2>
       <input type="text" id="signup-name" placeholder="Tutor Name" required />
       <input type="password" id="signup-password" placeholder="Password" required />
       <button type="submit">Sign Up</button>
-    </form>
-  </div> -->
+    </form> -->
 
   <div id="logo">
     <img src="Guiding Genius.png" alt="The True Tutor Logo" style="max-width: 150px; height: auto; border: 3px solid black; padding: 0px; border-radius: 10px;" />
@@ -118,15 +140,15 @@
     const message = document.getElementById('message');
     const onlyLetters = str => /^[A-Za-z\s]+$/.test(str);
 
-    async function signupTutor(name, password) {
-      const hashed = await hashPassword(password);
-      const res = await fetch('auth.php?action=signup', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ TutorName: name, Password: hashed })
-      });
-      return res.json();
-    }
+    // async function signupTutor(name, password) {
+    //   const hashed = await hashPassword(password);
+    //   const res = await fetch('auth.php?action=signup', {
+    //     method: 'POST',
+    //     headers: { 'Content-Type': 'application/json' },
+    //     body: JSON.stringify({ TutorName: name, Password: hashed })
+    //   });
+    //   return res.json();
+    // }
 
     async function loginTutor(name, password) {
       const hashed = await hashPassword(password);
@@ -139,25 +161,25 @@
     }
 
     // Sign Up
-    document.getElementById('signup-form').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const name = document.getElementById('signup-name').value.trim();
-      const pass = document.getElementById('signup-password').value;
+    // document.getElementById('signup-form').addEventListener('submit', async (e) => {
+    //   e.preventDefault();
+    //   const name = document.getElementById('signup-name').value.trim();
+    //   const pass = document.getElementById('signup-password').value;
 
-      if (!onlyLetters(name)) {
-        message.style.color = 'red';
-        return message.textContent = "Name must contain letters only.";
-      }
+    //   if (!onlyLetters(name)) {
+    //     message.style.color = 'red';
+    //     return message.textContent = "Name must contain letters only.";
+    //   }
 
-      const result = await signupTutor(name, pass);
-      if (result.success) {
-        message.style.color = 'green';
-        message.textContent = 'Signup successful! You can now log in.';
-      } else {
-        message.style.color = 'red';
-        message.textContent = result.message || 'Signup failed';
-      }
-    });
+    //   const result = await signupTutor(name, pass);
+    //   if (result.success) {
+    //     message.style.color = 'green';
+    //     message.textContent = 'Signup successful! You can now log in.';
+    //   } else {
+    //     message.style.color = 'red';
+    //     message.textContent = result.message || 'Signup failed';
+    //   }
+    // });
 
     // Log In
     document.getElementById('login-form').addEventListener('submit', async (e) => {
