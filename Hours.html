@@ -2,14 +2,7 @@
 <html>
 <head>
   <title>Hours - The True Tutor</title>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
   <style>
-    /* .form-field {
-        margin-bottom: 10px;
-        display: flex;
-        flex-direction: column;
-    } */
-
     .form-field {
       display: flex;
       align-items: center;
@@ -36,7 +29,6 @@
       border: 3px solid black;
       margin-top: 20px;
       background: white;
-
     }
     th, td {
       padding: 12px;
@@ -73,44 +65,43 @@
 </head>
 <body>
 
-<!-- <h1>Logged Hours</h1> -->
 <form id="add-form">
-    <h2>Log Hours</h2>
-    <div class="form-field">
-      <label>Date:</label>
-      <input type="date" id="Date" required style="width: 300px;">
-    </div>
-    <div class="form-field">
-      <label>Student Name:</label>
-      <input type="text" id="StudentName" required style="width: 300px;">
-    </div>
-    <div class="form-field">
-      <label>Subject:</label>
-      <input type="text" id="Subject" required style="width: 300px;">
-    </div>
-    <div class="form-field">
-      <label>Grade:</label>
-      <input type="text" id="Grade" required style="width: 300px;">
-    </div>
-    <div class="form-field">
-      <label>Travel Fee:</label>
-      <input type="number" step="0.01" id="TravelFee" required style="width: 300px;">
-    </div>
-    <div class="form-field">
-      <label>Number of Hours:</label>
-      <input type="number" step="0.01" id="NoOfHours" required style="width: 300px;">
-    </div>
-    <div class="form-field">
-      <label>Rate:</label>
-      <input type="number" step="0.01" id="Rate" required style="width: 300px;">
-    </div>
-    <button type="submit">Add Entry</button>
+  <h2>Log Hours</h2>
+  <div class="form-field">
+    <label>Date:</label>
+    <input type="date" id="Date" required style="width: 300px;">
+  </div>
+  <div class="form-field">
+    <label>Student Name:</label>
+    <input type="text" id="StudentName" required style="width: 300px;">
+  </div>
+  <div class="form-field">
+    <label>Subject:</label>
+    <input type="text" id="Subject" required style="width: 300px;">
+  </div>
+  <div class="form-field">
+    <label>Grade:</label>
+    <input type="text" id="Grade" required style="width: 300px;">
+  </div>
+  <div class="form-field">
+    <label>Travel Fee:</label>
+    <input type="number" step="0.01" id="TravelFee" required style="width: 300px;">
+  </div>
+  <div class="form-field">
+    <label>Number of Hours:</label>
+    <input type="number" step="0.01" id="NoOfHours" required style="width: 300px;">
+  </div>
+  <div class="form-field">
+    <label>Rate:</label>
+    <input type="number" step="0.01" id="Rate" required style="width: 300px;">
+  </div>
+  <button type="submit">Add Entry</button>
 </form>
 
 <table id="hours-table">
   <thead>
     <tr>
-        <th colspan="8" style="text-align: left; font-size: 24px; padding: 10px;">Logged Hours</th>
+      <th colspan="8" style="text-align: left; font-size: 24px; padding: 10px;">Logged Hours</th>
     </tr>
     <tr>
       <th>Date</th>
@@ -126,90 +117,67 @@
   <tbody></tbody>
 </table>
 
-  
-
 <script>
-  const supabase = window.supabase.createClient(
-    'https://oejtuvvzsiuutauntayg.supabase.co',
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9lanR1dnZ6c2l1dXRhdW50YXlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQ0MDY3MTgsImV4cCI6MjA1OTk4MjcxOH0.xXuV5Mf2kCWqC5ccBEXYSTeZpPvN4LEGA2xbFEjkkzE'
-  );
-
-  const TutorID = localStorage.getItem('TutorID'); // Assuming TutorID was stored at login
+  const TutorID = localStorage.getItem('TutorID');
   const tableBody = document.querySelector('#hours-table tbody');
-  console.log(TutorID);
-  async function fetchHours() {
-    const { data, error } = await supabase
-      .from('tblHours')
-      .select('*')
-      .eq('TutorID', TutorID);
 
-    if (error) {
-      alert('Error fetching hours: ' + error.message);
-      return;
-    }
+  // if (!TutorID) {
+  //   alert("No TutorID found. Please log in again.");
+  //   window.location.href = "index.html";
+  // }
 
-    tableBody.innerHTML = '';
-    data.forEach(row => {
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td>${row.Date}</td>
-        <td>${row.StudentName}</td>
-        <td>${row.Subject}</td>
-        <td>${row.Grade}</td>
-        <td>${row.TravelFee}</td>
-        <td>${row.NoOfHours}</td>
-        <td>${row.Rate}</td>
-        <td><button onclick="deleteRow(${row.id})">Delete</button></td>
-      `;
-      tableBody.appendChild(tr);
-    });
-  }
+function fetchHours() {
+  fetch(`auth.php?action=get_hours&TutorID=${TutorID}`)
+    .then(res => res.json())
+    .then(data => {
+      tableBody.innerHTML = '';
+      data.forEach(row => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${row.Lesson_Date}</td>
+          <td>${row.Student_Name_Surname}</td>
+          <td>${row.Subject}</td>
+          <td>${row.Grade}</td>
+          <td>${row.Travel_Fee}</td>
+          <td>${row.Number_Hours}</td>
+          <td>${row.Rate_Hour}</td>
+          <td><button onclick="deleteRow(${row.id})">Delete</button></td>
+        `;
+        tableBody.appendChild(tr);
+      });
+    })
+    .catch(err => alert('Error fetching hours: ' + err.message));
+}
 
-  async function deleteRow(id) {
-    const { error } = await supabase
-      .from('tblHours')
-      .delete()
-      .eq('id', id);
+document.getElementById('add-form').addEventListener('submit', e => {
+  e.preventDefault();
 
-    if (error) {
-      alert('Error deleting record: ' + error.message);
-    } else {
-      fetchHours();
-    }
-  }
+  const newRecord = {
+    TutorID,
+    Date: document.getElementById('Date').value,
+    StudentName: document.getElementById('StudentName').value,
+    Subject: document.getElementById('Subject').value,
+    Grade: document.getElementById('Grade').value,
+    TravelFee: parseInt(document.getElementById('TravelFee').value, 10),
+    NoOfHours: parseInt(document.getElementById('NoOfHours').value, 10),
+    Rate: parseInt(document.getElementById('Rate').value, 10),
+  };
 
-  document.getElementById('add-form').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const newRecord = {
-      TutorID,
-      Date: document.getElementById('Date').value,
-      StudentName: document.getElementById('StudentName').value,
-      Subject: document.getElementById('Subject').value,
-      Grade: document.getElementById('Grade').value,
-      TravelFee: parseFloat(document.getElementById('TravelFee').value),
-      NoOfHours: parseFloat(document.getElementById('NoOfHours').value),
-      Rate: parseFloat(document.getElementById('Rate').value),
-    };
-
-    const { error } = await supabase
-      .from('tblHours')
-      .insert([newRecord]);
-
-    if (error) {
-      alert('Error adding entry: ' + error.message);
-    } else {
-      e.target.reset();
-      fetchHours();
-    }
-  });
-
-  // Load hours on page load
-  if (!TutorID) {
-    alert("No TutorID found. Please log in again.");
-    window.location.href = "index.html";
-  } else {
+  fetch('auth.php?action=add_hour', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(newRecord)
+  })
+  .then(res => res.json())
+  .then(() => {
+    e.target.reset();
     fetchHours();
-  }
+  })
+  .catch(err => alert('Error adding entry: ' + err.message));
+});
+
+
+  fetchHours();
 </script>
 
 </body>
