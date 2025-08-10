@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>The True Tutor | Auth</title>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+
   <script>
     async function hashPassword(password) {
       const encoder = new TextEncoder();
@@ -14,8 +14,8 @@
       return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
     }
   </script>
-  <style>
 
+  <style>
     body {
       font-family: Arial, sans-serif;
       background: url('Backround.png') no-repeat center center fixed; 
@@ -112,73 +112,72 @@
     <img src="Guiding Genius.png" alt="The True Tutor Logo" style="max-width: 150px; height: auto; border: 3px solid black; padding: 0px; border-radius: 10px;" />
   </div>
   
-
   <p id="message"></p>
 
   <script>
-    const supabase = window.supabase.createClient(
-      'https://oejtuvvzsiuutauntayg.supabase.co', // Replace with your Supabase URL
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9lanR1dnZ6c2l1dXRhdW50YXlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQ0MDY3MTgsImV4cCI6MjA1OTk4MjcxOH0.xXuV5Mf2kCWqC5ccBEXYSTeZpPvN4LEGA2xbFEjkkzE'              // Replace with your anon key
-    );
-
     const message = document.getElementById('message');
-
     const onlyLetters = str => /^[A-Za-z\s]+$/.test(str);
-    const onlyNumbers = str => /^\d+$/.test(str);
+
+    async function signupTutor(name, password) {
+      const hashed = await hashPassword(password);
+      const res = await fetch('auth.php?action=signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ TutorName: name, Password: hashed })
+      });
+      return res.json();
+    }
+
+    async function loginTutor(name, password) {
+      const hashed = await hashPassword(password);
+      const res = await fetch('auth.php?action=login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ TutorName: name, Password: hashed })
+      });
+      return res.json();
+    }
 
     // Sign Up
     document.getElementById('signup-form').addEventListener('submit', async (e) => {
       e.preventDefault();
-      const TutorName = document.getElementById('signup-name').value.trim();
-      const Password = document.getElementById('signup-password').value;
+      const name = document.getElementById('signup-name').value.trim();
+      const pass = document.getElementById('signup-password').value;
 
-      if (!onlyLetters(TutorName)) return message.textContent = "Name must contain letters only.";
-      // if (!onlyNumbers(TutorID)) return message.textContent = "Tutor ID must contain numbers only.";
+      if (!onlyLetters(name)) {
+        message.style.color = 'red';
+        return message.textContent = "Name must contain letters only.";
+      }
 
-      
-      const { data: existingUser } = await supabase
-        .from('tblTutors')
-        .select('TutorName')
-        .eq('TutorName', TutorName)
-        .maybeSingle();
-
-      
-
-      if (existingUser) return message.textContent = "Tutor Name already exists.";
-      const HashedPassword = await hashPassword(Password);
-
-      const { error } = await supabase
-        .from('tblTutors')
-        .insert([{ TutorName, Password: HashedPassword }]);
-
-      if (error) return message.textContent = `Signup failed: ${error.message}`;
-
-      message.style.color = 'green';
-      message.textContent = 'Signup successful! You can now log in.';
+      const result = await signupTutor(name, pass);
+      if (result.success) {
+        message.style.color = 'green';
+        message.textContent = 'Signup successful! You can now log in.';
+      } else {
+        message.style.color = 'red';
+        message.textContent = result.message || 'Signup failed';
+      }
     });
 
     // Log In
     document.getElementById('login-form').addEventListener('submit', async (e) => {
       e.preventDefault();
-      const TutorName = document.getElementById('login-name').value.trim();
-      const Password = document.getElementById('login-password').value;
+      const name = document.getElementById('login-name').value.trim();
+      const pass = document.getElementById('login-password').value;
 
-      if (!onlyLetters(TutorName)) return message.textContent = "Name must contain letters only.";
+      if (!onlyLetters(name)) {
+        message.style.color = 'red';
+        return message.textContent = "Name must contain letters only.";
+      }
 
-      const HashedPassword = await hashPassword(Password);
-      const { data, error } = await supabase
-        .from('tblTutors')
-        .select('TutorID, TutorName, Password')
-        .eq('TutorName', TutorName)
-        .eq('Password', HashedPassword)
-        .maybeSingle();
-
-      if (error || !data) return message.textContent = "Login failed: incorrect name or password.";
-
-      // Save session and redirect
-      // localStorage.setItem('tutor', JSON.stringify(data));
-      localStorage.setItem('TutorID', data.TutorID);
-      window.location.href = "Hours.html";
+      const result = await loginTutor(name, pass);
+      if (result.success) {
+        localStorage.setItem('TutorID', result.TutorID);
+        window.location.href = "Hours.html";
+      } else {
+        message.style.color = 'red';
+        message.textContent = 'Login failed: incorrect name or password.';
+      }
     });
   </script>
 
